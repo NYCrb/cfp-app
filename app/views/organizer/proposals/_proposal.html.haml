@@ -9,3 +9,5 @@
   %td= proposal.review_tags
   %td.status= proposal.state_label(small: true, show_confirmed: true)
   %td.actions= proposal.small_state_buttons
+  %td 
+    =button_to 'Delete Proposal',  organizer_event_proposal_path(event_id: @event, uuid: proposal.uuid), :method => :delete, :data => {:confirm => 'Are you sure you want to delete this proposal?'}, :class => "btn btn-primary btn-sm"
