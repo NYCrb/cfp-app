@@ -47,7 +47,7 @@
                     Review
                     %b.caret
                   %ul.dropdown-menu
-                    - current_user.reviewer_events.each do |event|
+                    - current_user.decorate.all_reviewer_events.each do |event|
                       -unless event.archived?
                         %li= link_to event, reviewer_event_proposals_path(event)
               - if current_user.organizer?
@@ -56,7 +56,7 @@
                     Organize
                     %b.caret
                   %ul.dropdown-menu
-                    - current_user.organizer_events.each do |event|
+                    - current_user.decorate.all_organizer_events.each do |event|
                       %li
                         -unless event.archived?
                           = link_to event, organizer_event_path(event)

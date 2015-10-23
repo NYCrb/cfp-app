@@ -15,7 +15,7 @@ class EventDecorator < ApplicationDecorator
   end
 
   def path_for(person)
-    path = if person && person.organizer_for_event?(object)
+    path = if person && (person.organizer_for_event?(object) || person.global_organizer?)
       h.organizer_event_proposals_path(object)
     else
       h.event_path(object.slug)

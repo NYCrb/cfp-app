@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150604225912) do
+ActiveRecord::Schema.define(version: 20151023163637) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -70,11 +70,11 @@ ActiveRecord::Schema.define(version: 20150604225912) do
 
   create_table "notifications", force: true do |t|
     t.integer  "person_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.string   "message"
     t.datetime "read_at"
     t.string   "target_path"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "notifications", ["person_id"], name: "index_notifications_on_person_id", using: :btree
@@ -110,6 +110,7 @@ ActiveRecord::Schema.define(version: 20150604225912) do
     t.boolean  "admin",        default: false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "role"
   end
 
   create_table "proposals", force: true do |t|
@@ -120,11 +121,11 @@ ActiveRecord::Schema.define(version: 20150604225912) do
     t.text     "abstract"
     t.text     "details"
     t.text     "pitch"
+    t.text     "last_change"
+    t.text     "confirmation_notes"
     t.datetime "confirmed_at"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.text     "last_change"
-    t.text     "confirmation_notes"
     t.datetime "updated_by_speaker_at"
     t.text     "proposal_data"
   end

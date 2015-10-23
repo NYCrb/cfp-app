@@ -1,7 +1,7 @@
 %tr
   %td= link_to person.name, admin_person_path(person)
   %td= person.email
-  %td= person.role_names
+  %td= person.role
   %td= person.created_at
   %td.actions
     = link_to 'Edit', edit_admin_person_path(person), class: 'btn btn-primary btn-xs'

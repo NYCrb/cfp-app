@@ -19,7 +19,9 @@ class Reviewer::ApplicationController < ApplicationController
   end
 
   def require_event
-    @event = current_user.reviewer_events.find(params[:event_id] || params[:id])
+    @event = current_user.global_reviewer? ?
+      Event.find_by_id(params[:event_id] || params[:id]) :
+      current_user.reviewer_events.find(params[:event_id] || params[:id])
   end
 
   # Prevent reviewers from reviewing their own proposals

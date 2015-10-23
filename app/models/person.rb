@@ -1,6 +1,7 @@
 require 'digest/md5'
 
 class Person < ActiveRecord::Base
+  include Roles;
   DEMOGRAPHICS      = [:gender, :ethnicity, :country]
   DEMOGRAPHIC_TYPES = {
     country: CountrySelect::countries.select{ |k,v| k != 'us'}.values.sort.unshift("United States of America")
@@ -9,6 +10,9 @@ class Person < ActiveRecord::Base
   store_accessor :demographics, :gender
   store_accessor :demographics, :ethnicity
   store_accessor :demographics, :country
+
+  scope :global_organizers, ->{ where(role: ROLE_ORGANIZER) }
+  scope :global_reviewers,   ->{ where(role: ROLE_TYPES) }
 
   has_many :invitations,  dependent: :destroy
   has_many :services,     dependent: :destroy
@@ -27,6 +31,7 @@ class Person < ActiveRecord::Base
   validates :email, uniqueness: { case_insensitive: true }, allow_nil: true
   validates :bio, length: { maximum: 500 }
   validates :name, :presence => true, allow_nil: true
+  validates :role, allow_blank: true, :inclusion => { :in => ROLE_TYPES }
 
   def self.authenticate(auth, current_user = nil)
     provider = auth['provider']
@@ -88,16 +93,27 @@ class Person < ActiveRecord::Base
     gender.present? && ethnicity.present? && country.present?
   end
 
+  # Person acts as organizer of any content, regardless of associated 
+  #  Participant or Event.
+  def global_organizer?
+    role == ROLE_ORGANIZER
+  end
+
   def organizer?
-    organizer_events.count > 0
+    organizer_events.count > 0 || global_organizer?
   end
 
   def organizer_for_event?(event)
     participants.organizer.for_event(event).size > 0
   end
 
+  # Person can reivew any content, regardless of assoc Participant/Event.
+  def global_reviewer?
+    ROLE_TYPES.include? role
+  end
+
   def reviewer?
-    reviewer_events.count > 0
+    reviewer_events.count > 0 || global_reviewer?
   end
 
   def reviewer_for_event?(event)
@@ -113,6 +129,8 @@ class Person < ActiveRecord::Base
     end
   end
 
+  # Retrieve roles from Participant associations. Does not include the current
+  #  Person.role value.
   def role_names
     self.participants.collect {|p| p.role}.uniq.join(", ")
   end
@@ -131,4 +149,5 @@ end
 #  admin        :boolean          default(FALSE)
 #  created_at   :datetime
 #  updated_at   :datetime
+#  role         :string(255)
 #
