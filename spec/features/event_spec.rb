@@ -5,6 +5,7 @@ feature "Listing events for different roles" do
   let!(:proposal) { create(:proposal, title: "A Proposal", abstract: 'foo', event: event) }
   let(:normal_user) { create(:person) }
   let(:organizer) { create(:person) }
+  let(:global_organizer) { create(:person, :global_organizer) }
 
   context "As a regular user" do
     scenario "the user should see a link to to the proposals for an event" do
@@ -18,6 +19,14 @@ feature "Listing events for different roles" do
     scenario "the organizer should see a link to the index for managing proposals" do
       create(:participant, role: 'organizer', person: organizer)
       login_user(organizer)
+      visit events_path
+      expect(page).to have_link('1 proposal', href: organizer_event_proposals_path(event))
+    end
+  end
+
+  context 'As a global organizer' do
+    scenario 'without assoc participant the global organizer should see link to index for managing proposals' do
+      login_user(global_organizer)
       visit events_path
       expect(page).to have_link('1 proposal', href: organizer_event_proposals_path(event))
     end

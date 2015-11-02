@@ -373,23 +373,26 @@ describe Proposal do
     let!(:proposal) { create(:proposal) }
     let!(:reviewer) { create(:person, :reviewer) }
     let!(:organizer) { create(:organizer, event: proposal.event) }
+    let!(:global_organizer) { create(:global_organizer_with_event, event: proposal.event) }
+    let!(:global_reviewer)  { create(:person, :global_reviewer) }
 
     it "can return the list of reviewers" do
       create(:rating, person: reviewer, proposal: proposal)
       proposal.public_comments.create(attributes_for(:comment, person: organizer))
 
-      expect(proposal.reviewers).to match_array([ reviewer, organizer ])
+      expect(proposal.reviewers).to match_array([ reviewer, organizer, global_organizer, global_reviewer ])
     end
 
     it "does not return uninvolved reviewers" do
-      expect(proposal.reviewers).to be_empty
+      expect(proposal.reviewers).to match_array([ global_organizer, global_reviewer ])
     end
 
     it "does not list a reviewer more than once" do
       create(:rating, person: reviewer, proposal: proposal)
       proposal.public_comments.create(attributes_for(:comment, person: reviewer))
+      proposal.public_comments.create(attributes_for(:comment, person: global_organizer))
 
-      expect(proposal.reviewers).to match_array([ reviewer ])
+      expect(proposal.reviewers).to match_array([ reviewer, global_organizer, global_reviewer ])
     end
   end
 
