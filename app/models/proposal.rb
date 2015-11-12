@@ -63,12 +63,22 @@ class Proposal < ActiveRecord::Base
   # - They are an organizer or reviewer for this event
   # AND
   # - They have rated or made a public comment on this proposal
+  # OR
+  # - They have 'global' role of organizer or reviewer
   def reviewers
-    Person.joins(:participants,
+    revs = Person.joins(:participants,
                  'LEFT OUTER JOIN ratings AS r ON r.person_id = people.id',
                  'LEFT OUTER JOIN comments AS c ON c.person_id = people.id')
       .where("participants.event_id = ? AND participants.role IN (?) AND (r.proposal_id = ? or (c.proposal_id = ? AND c.type = 'PublicComment'))",
              event.id, ['organizer', 'reviewer'], id, id).uniq
+
+    Person.global_reviewers.each { |person|
+      unless revs.include? person
+        revs << person
+      end
+    }
+
+    revs
   end
 
   def video_url

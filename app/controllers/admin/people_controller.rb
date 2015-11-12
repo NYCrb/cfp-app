@@ -21,7 +21,7 @@ class Admin::PeopleController < Admin::ApplicationController
     if @person.update(person_params)
       redirect_to admin_people_path, flash: { info: "#{@person.name} was successfully updated." }
     else
-      render :edit, locals: { person: person }
+      render :edit, locals: { person: @person }
     end
   end
 
@@ -41,6 +41,6 @@ class Admin::PeopleController < Admin::ApplicationController
     # Only allow a trusted parameter "white list" through.
     def person_params
       params.require(:person).permit(:bio, :gender, :ethnicity, :country,
-                                     :name, :email)
+                                     :name, :email, :role)
     end
 end

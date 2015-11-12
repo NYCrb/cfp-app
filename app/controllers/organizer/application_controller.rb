@@ -6,7 +6,11 @@ class Organizer::ApplicationController < ApplicationController
 
   def require_event
     @event = current_user &&
-      current_user.organizer_events.find(params[:event_id] || params[:id])
+      if current_user.global_organizer?
+        Event.find_by_id(params[:event_id] || params[:id])
+      else
+        current_user.organizer_events.find(params[:event_id] || params[:id])
+      end
   end
 
   # Must be an organizer on @event

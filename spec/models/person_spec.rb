@@ -147,27 +147,52 @@ describe Person do
     end
   end
 
-  describe '#reviewer?' do
-    let(:person) { create(:person, :reviewer) }
 
-    it 'is true when reviewer for any event' do
-      expect(person).to be_reviewer
-    end
-    it 'is false when not reviewer of any event' do
-      person.participants.map { |p| p.update_attribute(:role, 'not_reviewer') }
-      expect(person).not_to be_reviewer
+  context 'reviewer is not global' do 
+    describe '#reviewer?' do
+      let(:person) { create(:person, :reviewer) }
+
+      it 'is true when reviewer for any event' do
+        expect(person).to be_reviewer
+      end
+      it 'is false when not reviewer of any event' do
+        person.participants.map { |p| p.update_attribute(:role, 'not_reviewer') }
+        expect(person).not_to be_reviewer
+      end
     end
   end
 
-  describe '#organizer?' do
-    let(:person) { create(:person, :organizer) }
+  context 'reviewer is global' do
+    describe '#reviewer?' do
+      let(:person) { create(:person, :global_reviewer) }
 
-    it 'is true when organizer for any event' do
-      expect(person).to be_organizer
+      it 'is true for any event without assoc participants' do
+        expect(person).to be_reviewer
+      end
     end
-    it 'is false when not organizer of any event' do
-      person.participants.map { |p| p.update_attribute(:role, 'not_organizer') }
-      expect(person).not_to be_organizer
+  end
+
+  context 'organizer is not global' do
+    describe '#organizer?' do
+      let(:person) { create(:person, :organizer) }
+
+      it 'is true when organizer for any event' do
+        expect(person).to be_organizer
+      end
+      it 'is false when not organizer of any event' do
+        person.participants.map { |p| p.update_attribute(:role, 'not_organizer') }
+        expect(person).not_to be_organizer
+      end
+    end
+  end
+
+  context 'organizer is global' do
+    describe '#organizer?' do
+      let(:person) { create(:person, :global_organizer) }
+
+      it 'is true for any event without assoc participants' do
+        expect(person).to be_organizer
+      end
     end
   end
 

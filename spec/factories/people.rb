@@ -21,6 +21,14 @@ FactoryGirl.define do
       end
     end
 
+    trait :global_organizer do
+      role Roles::ROLE_ORGANIZER
+    end
+
+    trait :global_reviewer do
+      role Roles::ROLE_REVIEWER
+    end
+
     factory :admin do
       admin true
     end
@@ -48,5 +56,17 @@ FactoryGirl.define do
         participant.save
       end
     end
+
+    factory :global_organizer_with_event, traits: [ :global_organizer, :organizer ] do
+      transient do
+        event { build(:event) }
+      end
+
+      after(:create) do |person, evaluator|
+        participant = person.organizer_participants.first
+        participant.event = evaluator.event
+        participant.event.save
+      end
+    end    
   end
 end

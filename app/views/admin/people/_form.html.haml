@@ -1,4 +1,12 @@
 = form_for [:admin, person] do |f|
+  = if person.errors.any?
+    %div
+      %h2
+        = pluralize(person.errors.count, 'error') << ' prohibited this Person from being saved:'
+      %ul
+      - person.errors.full_messages.each do |message|
+        %li
+          = message
   .row
     %fieldset.col-md-6
       %h2 Person
@@ -14,6 +22,11 @@
         = f.text_area :bio, class: 'form-control', placeholder: 'Bio', rows: 8
 
     %fieldset.col-md-4
+      %h2 Global Role
+      %p
+      .form-group
+        = f.label :role
+        = f.select :role, options_for_select(Roles::ROLE_TYPES, person.role), { include_blank: true }, class: 'form-control'
       %h2 Demographics
       %p= render :partial => 'shared/demographics', :locals => {:f => f}
 
