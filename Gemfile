@@ -32,6 +32,7 @@ gem 'zeroclipboard-rails'
 group :production do
   gem 'rails_12factor'
   gem 'rack-timeout', '~> 0.2.4'
+  gem 'airbrake', '~> 5.0'
 end
 
 group :development do
