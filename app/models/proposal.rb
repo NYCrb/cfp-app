@@ -18,6 +18,7 @@ class Proposal < ActiveRecord::Base
 
   validates :title, :abstract, presence: true
   validates :abstract, length: {maximum: 600}
+  validates :title, length: {maximum: 60}
 
   serialize :last_change
   serialize :proposal_data, Hash
@@ -40,6 +41,7 @@ class Proposal < ActiveRecord::Base
   scope :unrated, -> { where('id NOT IN ( SELECT proposal_id FROM ratings )') }
   scope :rated, -> { where('id IN ( SELECT proposal_id FROM ratings )') }
   scope :scheduled, -> { joins(:session) }
+  scope :not_withdrawn, -> {where.not(state: WITHDRAWN)}
   scope :waitlisted, -> { where(state: WAITLISTED) }
   scope :available, -> do
     includes(:session).where(sessions: {proposal_id: nil}, state: ACCEPTED).order(:title)
